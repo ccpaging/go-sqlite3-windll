@@ -55,7 +55,6 @@ const (
 	SQLITE_OPEN_PRIVATECACHE   = 0x00040000 /* Ok for sqlite3_open_v2() */
 	SQLITE_OPEN_WAL            = 0x00080000 /* VFS only */
 	SQLITE_STATIC              = 0
-	SQLITE_TRANSIENT           = 18446744073709551615 // Can't do -1 for overflow like in C, so use largest unsigned 64bit int.
 
 	SQLITE_BUSY = 5
 	SQLITE_DONE = 101

@@ -71,14 +71,14 @@ func sqlite3_threadsafe() int {
 func sqlite3_open_v2(filename string, ppDb *sqlite3, flags int, zVfs string) int {
 	var fn uintptr
 	if len(filename) > 0 {
-		var tfn []byte = []byte(filename)
+		var tfn = []byte(filename)
 		fn = uintptr(unsafe.Pointer(&tfn[0]))
 	} else {
 		fn = uintptr(0)
 	}
 	var vfs uintptr
 	if len(zVfs) > 0 {
-		var tvfs []byte = []byte(zVfs)
+		var tvfs = []byte(zVfs)
 		vfs = uintptr(unsafe.Pointer(&tvfs[0]))
 	} else {
 		vfs = uintptr(0)
@@ -103,7 +103,7 @@ func sqlite3_close_v2(db sqlite3) int {
 }
 
 func sqlite3_prepare_v2(db sqlite3, zSql string) (retCode int, stmtHandle sqlite3_stmt, tail string) {
-	var sql []byte = []byte(zSql + "\x00")
+	var sql = []byte(zSql + "\x00")
 	var handle uintptr
 	var thandle uintptr
 	retInt, _, _ := dll_sqlite3_prepare_v2.Call(
@@ -133,7 +133,7 @@ func sqlite3_bind_parameter_count(stmt sqlite3_stmt) int {
 }
 
 func sqlite3_bind_parameter_index(stmt sqlite3_stmt, name string) int {
-	var pName []byte = []byte(name)
+	var pName = []byte(name)
 	retInt, _, _ := dll_sqlite3_bind_parameter_index.Call(
 		uintptr(stmt),
 		uintptr(unsafe.Pointer(&pName[0])),
@@ -252,9 +252,8 @@ func sqlite3_column_decltype(stmt sqlite3_stmt, index int) string {
 	)
 	if msgPtr == uintptr(0) {
 		return ""
-	} else {
-		return BytePtrToString((*byte)(unsafe.Pointer(msgPtr)))
 	}
+	return BytePtrToString((*byte)(unsafe.Pointer(msgPtr)))
 }
 
 func sqlite3_column_type(stmt sqlite3_stmt, index int) int {
