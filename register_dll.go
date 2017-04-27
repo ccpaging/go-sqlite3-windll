@@ -1,4 +1,4 @@
-// +build windows,amd64
+// +build windows
 // Copyright (C) 2016 Samuel Melrose <sam@infitialis.com>.
 //
 // Based on work by Yasuhiro Matsumoto <mattn.jp@gmail.com>
@@ -12,6 +12,7 @@ package sqlite3
 import (
 	"fmt"
 	"path/filepath"
+	"runtime"
 	"syscall"
 )
 
@@ -114,7 +115,7 @@ func registerDLLFunctions() {
 }
 
 func registerDLL() error {
-	dllName := "sqlite3.dll"
+	dllName := "sqlite3_" + runtime.GOARCH + ".dll"
 	dllPath := DLLPath
 	if len(dllPath) == 0 {
 		dllPath = basePath()
