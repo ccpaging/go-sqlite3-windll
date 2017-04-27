@@ -48,6 +48,7 @@ func (d *SQLiteDriver) Open(dsn string) (driver.Conn, error) {
 	var loc *time.Location
 	txlock := "BEGIN"
 	busyTimeout := 5000
+	dsn = strings.TrimPrefix(dsn, `file:///`)
 	pos := strings.IndexRune(dsn, '?')
 	if pos >= 1 {
 		params, err := url.ParseQuery(dsn[pos+1:])
@@ -94,7 +95,6 @@ func (d *SQLiteDriver) Open(dsn string) (driver.Conn, error) {
 			dsn = dsn[:pos]
 		}
 	}
-	dsn = strings.TrimPrefix(dsn, `file:///`)
 
 	var db sqlite3
 	rv := sqlite3_open_v2(dsn, &db, SQLITE_OPEN_FULLMUTEX|SQLITE_OPEN_READWRITE|SQLITE_OPEN_CREATE, "")
