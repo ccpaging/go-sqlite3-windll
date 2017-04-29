@@ -38,7 +38,7 @@ func basePath() string {
 func BytePtrToString(p *byte) string {
 	var (
 		sizeTest byte
-		finalStr []byte = make([]byte, 0)
+		finalStr = make([]byte, 0)
 	)
 	for {
 		if *p == byte(0) {
