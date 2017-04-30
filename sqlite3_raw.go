@@ -237,11 +237,13 @@ func sqlite3_clear_bindings(stmt sqlite3_stmt) {
 }
 
 func sqlite3_step(stmt sqlite3_stmt, rowid *int64, changes *int64) int {
-	retInt, _, _ := dll_sqlite3_step.Call(
-		uintptr(stmt),
-		uintptr(unsafe.Pointer(rowid)),
-		uintptr(unsafe.Pointer(changes)),
-	)
+	stmtPtr := uintptr(stmt)
+	retInt, _, _ := dll_sqlite3_step.Call(stmtPtr)
+	db, _, _ := dll_sqlite3_db_handle.Call(stmtPtr)
+	retRowid, _, _ := dll_sqlite3_last_insert_rowid.Call(db)
+	retChanges, _, _ := dll_sqlite3_changes.Call(db)
+	*rowid = int64(retRowid)
+	*changes = int64(retChanges)
 	return int(retInt)
 }
 

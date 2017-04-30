@@ -22,6 +22,10 @@ var (
 
 	modSQLite3 *syscall.LazyDLL
 
+	dll_sqlite3_db_handle         *syscall.LazyProc
+	dll_sqlite3_last_insert_rowid *syscall.LazyProc
+	dll_sqlite3_changes           *syscall.LazyProc
+
 	dll_sqlite3_libversion        *syscall.LazyProc
 	dll_sqlite3_libversion_number *syscall.LazyProc
 	dll_sqlite3_sourceid          *syscall.LazyProc
@@ -69,6 +73,10 @@ func registerDLLFunctions() {
 		dllRegistered = false
 		return
 	}
+
+	dll_sqlite3_db_handle = modSQLite3.NewProc("sqlite3_db_handle")
+	dll_sqlite3_last_insert_rowid = modSQLite3.NewProc("sqlite3_last_insert_rowid")
+	dll_sqlite3_changes = modSQLite3.NewProc("sqlite3_changes")
 
 	dll_sqlite3_libversion = modSQLite3.NewProc("sqlite3_libversion")
 	dll_sqlite3_libversion_number = modSQLite3.NewProc("sqlite3_libversion_number")

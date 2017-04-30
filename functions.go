@@ -10,8 +10,10 @@
 package sqlite3
 
 import (
+	"database/sql/driver"
 	"os"
 	"path/filepath"
+	"regexp"
 	"unsafe"
 )
 
@@ -49,4 +51,31 @@ func BytePtrToString(p *byte) string {
 		p = (*byte)(unsafe.Pointer(uintptr(unsafe.Pointer(p)) + unsafe.Sizeof(sizeTest)))
 	}
 	return string(finalStr[0:])
+}
+
+var tableNameRegexp = regexp.MustCompile(`(?is)^[\s]*INSERT[\s]+INTO[\s]+([^(\s]+)`)
+
+func LastInsertID(c *SQLiteConn, table string, isTableName bool) (int64, error) {
+	if len(table) == 0 {
+		return 0, nil
+	}
+	if !isTableName {
+		matches := tableNameRegexp.FindStringSubmatch(table)
+		if matches == nil {
+			return 0, nil
+		}
+		table = matches[1]
+	}
+
+	rows, err := c.Query("SELECT last_insert_rowid() FROM `"+table+"`", nil)
+	if err != nil {
+		return 0, err
+	}
+	v := make([]driver.Value, 1)
+	err = rows.Next(v)
+	if err != nil {
+		return 0, err
+	}
+	rowid, _ := v[0].(int64)
+	return rowid, nil
 }

@@ -2,6 +2,7 @@ package sqlite3
 
 import (
 	"database/sql"
+	"log"
 	"os"
 	"path/filepath"
 	"testing"
@@ -27,6 +28,7 @@ func TestOpen(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	log.Println(`sqlite3_threadsafe():`, sqlite3_threadsafe())
 	_ = r
 	r, err = db.Exec(`INSERT INTO test(name) VALUES ('first') `)
 	if err != nil {
@@ -41,6 +43,21 @@ func TestOpen(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, int64(1), rowid)
+	assert.Equal(t, int64(1), affected)
+
+	r, err = db.Exec(`INSERT INTO test(name) VALUES ('second') `)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rowid, err = r.LastInsertId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	affected, err = r.RowsAffected()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, int64(2), rowid)
 	assert.Equal(t, int64(1), affected)
 	db.Close()
 	os.Remove(`./test.db`)
