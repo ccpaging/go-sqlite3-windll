@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestOpen(t *testing.T) {
@@ -26,6 +28,20 @@ func TestOpen(t *testing.T) {
 		t.Fatal(err)
 	}
 	_ = r
+	r, err = db.Exec(`INSERT INTO test(name) VALUES ('first') `)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rowid, err := r.LastInsertId()
+	if err != nil {
+		t.Fatal(err)
+	}
+	affected, err := r.RowsAffected()
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, int64(1), rowid)
+	assert.Equal(t, int64(1), affected)
 	db.Close()
 	os.Remove(`./test.db`)
 }
