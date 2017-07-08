@@ -1,22 +1,27 @@
-package main
+package sqlite3
 
 import (
 	"database/sql"
 	"fmt"
-	sqlite3 "github.com/ccpaging/go-sqlite3-windll"
 	"log"
 	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func main() {
-	log.Printf("Is Windows 64: %v\n", sqlite3.SQLiteWin64)
+func TestPlatform(t *testing.T) {
+	log.Printf("Is Windows 64: %v\n", SQLiteWin64)
 	os.Remove("./foo.db")
 
 	db, err := sql.Open("sqlite3", "./foo.db")
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
+	defer func() {
+		db.Close()
+		os.Remove("./foo.db")
+	}()
 
 	sqlStmt := `
 	create table foo (id integer not null primary key, name text);
@@ -57,7 +62,7 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(id, name)
+		assert.Equal(t, fmt.Sprintf("こんにちわ世界%03d", id), name)
 	}
 	err = rows.Err()
 	if err != nil {
@@ -74,7 +79,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(name)
+	assert.Equal(t, fmt.Sprintf("こんにちわ世界%03d", 3), name)
 
 	_, err = db.Exec("delete from foo")
 	if err != nil {
@@ -98,7 +103,14 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(id, name)
+		switch id {
+		case 1:
+			assert.Equal(t, `foo`, name)
+		case 2:
+			assert.Equal(t, `bar`, name)
+		case 3:
+			assert.Equal(t, `baz`, name)
+		}
 	}
 	err = rows.Err()
 	if err != nil {

@@ -10,8 +10,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestOpen(t *testing.T) {
+func init() {
 	DLLPath = filepath.Join(os.Getenv(`GOPATH`), `src`, `github.com/admpub/go-sqlite3-win64`)
+}
+
+func TestOpen(t *testing.T) {
 	f, err := os.Create(`./test.db`)
 	if err != nil {
 		t.Fatal(err)
