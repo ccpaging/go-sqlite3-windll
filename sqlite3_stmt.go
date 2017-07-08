@@ -15,7 +15,7 @@ import (
 	"runtime"
 	"time"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // Close the statement.
@@ -60,7 +60,11 @@ func (s *SQLiteStmt) bind(args []namedValue) error {
 		case string:
 			rv = sqlite3_bind_text(s.s, n, v)
 		case int64:
-			rv = sqlite3_bind_int64(s.s, n, v)
+			if SQLiteWin64 {
+				rv = sqlite3_bind_int64(s.s, n, v)
+			} else {
+				rv = sqlite3_bind_int(s.s, n, int(v))
+			}
 		case bool:
 			if bool(v) {
 				rv = sqlite3_bind_int(s.s, n, 1)

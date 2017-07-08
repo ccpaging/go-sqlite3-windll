@@ -15,7 +15,7 @@ import (
 	"runtime"
 	"strings"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 // Exec implements Execer.

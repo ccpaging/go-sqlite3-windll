@@ -20,7 +20,13 @@ import (
 	"time"
 )
 
+var SQLiteWin64 = true 
+
 func init() {
+	if runtime.GOARCH == "386" {
+		SQLiteWin64 = false
+	}
+
 	registerDLLFunctions()
 
 	sql.Register("sqlite3", &SQLiteDriver{})
