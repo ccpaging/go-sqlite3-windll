@@ -310,7 +310,9 @@ func sqlite3_column_text(stmt sqlite3_stmt, index int) string {
 	)
 
 	n := sqlite3_column_bytes(stmt, index)
-
+        if n==0{
+		return []byte{}
+	}
 	slice := make([]byte, n)
 	copy(slice[:], (*[1 << 30]byte)(unsafe.Pointer(bytesPtr))[0:n])
 	return string(slice)
