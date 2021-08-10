@@ -14,6 +14,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"unsafe"
 )
 
@@ -64,13 +65,14 @@ func LastInsertID(c *SQLiteConn, table string, isTableName bool) (int64, error) 
 		if matches == nil {
 			return 0, nil
 		}
-		table = matches[1]
+		table = strings.Trim(matches[1], "`")
 	}
 
 	rows, err := c.Query("SELECT last_insert_rowid() FROM `"+table+"`", nil)
 	if err != nil {
 		return 0, err
 	}
+	defer rows.Close()
 	v := make([]driver.Value, 1)
 	err = rows.Next(v)
 	if err != nil {
