@@ -1,4 +1,4 @@
-EXPORTS
+EXPORTS (v3.36.0)
 sqlite3_aggregate_context
 sqlite3_aggregate_count
 sqlite3_auto_extension
